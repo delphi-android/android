@@ -1,0 +1,14 @@
+procedure TfMenu.ButBuscarClick(Sender: TObject);
+begin
+  try
+    RESTClient1.BaseURL := 'https://www.receitaws.com.br';
+    RESTRequest1.Resource := 'v1/cnpj/{cnpj}';
+    RESTRequest1.Params.AddUrlSegment('cnpj', ApenasNumerosStr(EditCNPJ.Text));
+    //Retorna dados completos
+  finally
+    RESTRequest1.Execute;
+    if dbStatus.Text = 'OK' then
+      if cbCNPJHistorico.Items.IndexOf(EditCNPJ.Text) = -1 then
+        cbCNPJHistorico.Items.Add(EditCNPJ.Text);
+  end;
+end;
