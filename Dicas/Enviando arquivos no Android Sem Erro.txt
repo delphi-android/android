@@ -1,0 +1,54 @@
+https://imperiumdelphi.wordpress.com/2019/03/04/o-tal-do-fileprovider-do-android/
+Ver dica acima também, outro jeito
+
+1: 
+Vá em "Project>Options>Application>Entitlemnet List"
+Marque a opção "Secure File Sharing" como True;
+
+2: Em "Project>Deployment" Desmarque a opção "Android\Release\   provider_paths.xml" 
+
+Crie sua versão do arquivo com o nome "provider_paths.xml" e adicione em "Project>Deployment", com seguinte texto:
+
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="external_files" path="." />
+    <files-path name="files" path="." />
+</paths>
+
+
+(OBS: O arquivo original gerado pela Embarcadero está com problemas, segundo pesquisas que fiz, por isso a substituição)
+
+
+Caso não tenha uma rotina para envio/abertura de arquivos, segue uma pro Delphi 10.3.3:
+
+//Codigo
+procedure TForm1.Button1Click(Sender: TObject);
+var
+  LIntent: JIntent;
+  LFile: JFile;
+  LFileName: string;
+begin
+  //As permissões Read e Write external devem ser implatadas
+  LFileName := TPath.Combine(TPath.GetSharedDocumentsPath, 'Precos.txt');
+  LFile := TJFile.JavaClass.init(StringToJString(LFileName));
+  LIntent := TJIntent.JavaClass.init(TJIntent.JavaClass.ACTION_SEND);
+  LIntent.setDataAndType(TAndroidHelper.JFileToJURI(LFile),
+    StringToJString('text/plain'));
+  LIntent.setFlags(TJIntent.JavaClass.FLAG_GRANT_READ_URI_PERMISSION);
+  TAndroidHelper.Activity.startActivity(LIntent);
+end;
+
+
+(Exemplo GitHub: https://github.com/DelphiWorlds/MiscStuff/blob/master/Test/OpenPDFTest.zip)
+
+
+(D:\00-DelphiTestes\0000 - Apps Destaque\FileProvider)
+
+
+//Fontes
+https://github.com/DelphiWorlds/MiscStuff/blob/master/Test/OpenPDFTest.zip
+
+https://stackoom.com/question/3zKtH/%E6%89%93%E5%BC%80PDF%E6%96%87%E4%BB%B6Delphi-RIO (arquivo xml correto)
+
+https://en.delphipraxis.net/topic/1361-android-how-to-call-a-tjintent/  (Solução Entitlemnet List)
+
